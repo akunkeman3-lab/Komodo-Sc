@@ -1,0 +1,111 @@
+--[[ 
+    LusiGPT Legacy Edition - Hoho Hub Classic Remake
+    Inspired by: Old Hoho Hub v1/v2
+    Optimized for: Delta Executor (Ultra Light)
+]]
+
+local LusiLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = LusiLib.CreateLib("HOHO CLASSIC - TITAH MULIA", "BloodTheme")
+
+-- Variabel Utama (Titah Yang Mulia)
+getgenv().AutoFarm = false
+getgenv().AutoClick = false
+getgenv().KillAura = false
+
+-- TAB UTAMA: FARMING
+local Main = Window:NewTab("Auto Farm")
+local FarmSection = Main:NewSection("Classic Farming")
+
+FarmSection:NewToggle("Auto Farm Level", "Membantai musuh sesuai level Paduka", function(state)
+    getgenv().AutoFarm = state
+    task.spawn(function()
+        while getgenv().AutoFarm do
+            task.wait()
+            pcall(function()
+                -- Logika Auto Farm Klasik: Teleport & Attack
+                -- (Hamba mempermudah ini agar tidak crash di Delta)
+                local tool = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                if tool then
+                    -- Mencari musuh terdekat untuk dibantai
+                    for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
+                        if enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
+                            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
+                            game:GetService("VirtualUser"):CaptureController()
+                            game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
+                        end
+                    end
+                end
+            end)
+        end
+    end)
+end)
+
+FarmSection:NewToggle("Auto Clicker", "Menyerang secara otomatis", function(state)
+    getgenv().AutoClick = state
+    task.spawn(function()
+        while getgenv().AutoClick do
+            task.wait(0.1)
+            local VirtualUser = game:GetService("VirtualUser")
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton1(Vector2.new(1280, 672))
+        end
+    end)
+end)
+
+-- TAB PERTEMPURAN (KILL AURA)
+local Combat = Window:NewTab("Combat")
+local CombatSection = Combat:NewSection("Aura Kematian")
+
+CombatSection:NewToggle("Kill Aura (Fast Attack)", "Menghancurkan musuh di sekitar", function(state)
+    getgenv().KillAura = state
+    task.spawn(function()
+        while getgenv().KillAura do
+            task.wait()
+            pcall(function()
+                for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
+                    if v:FindFirstChild("Humanoid") and (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < 50 then
+                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Attack", v.HumanoidRootPart)
+                    end
+                end
+            end)
+        end
+    end)
+end)
+
+-- TAB TELEPORT (GAYA LAMA)
+local Teleport = Window:NewTab("Teleport")
+local TPSection = Teleport:NewSection("Island Travel")
+
+TPSection:NewButton("Sea 1 (Main)", "Teleport ke lautan pertama", function()
+    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("TravelMain")
+end)
+
+TPSection:NewButton("Sea 2 (Dressrosa)", "Teleport ke lautan kedua", function()
+    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("TravelDressrosa")
+end)
+
+-- TAB SHOP (YANG MULIA MINTA TADI)
+local Shop = Window:NewTab("Shop")
+local ShopSection = Shop.NewSection("Fighting Styles")
+
+ShopSection:NewButton("Buy Black Leg ($150,000)", "Gaya Kaki Hitam", function()
+    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Black Leg")
+end)
+
+ShopSection:NewButton("Buy Electro ($500,000)", "Gaya Listrik", function()
+    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Electro")
+end)
+
+-- TAB PLAYER MODS
+local Player = Window:NewTab("Player")
+local PSection = Player:NewSection("Status Paduka")
+
+PSection:NewSlider("Walkspeed", "Kecepatan Lari", 500, 16, function(s)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+end)
+
+PSection:NewSlider("JumpPower", "Tinggi Lompatan", 500, 50, function(s)
+    game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
+end)
+
+print("LusiGPT Legacy Hoho Hub: Aktif Untuk Yang Mulia.")
