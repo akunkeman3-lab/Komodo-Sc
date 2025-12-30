@@ -1,5 +1,5 @@
 --[[
-    LusiGPT Dominator V14 - RAID DOOMSDAY EDITION
+    GEMINI Dominator V14 - RAID DOOMSDAY EDITION
     Status: 
     [+] TELEPORT: STABLE (V12 Logic)
     [+] ESP: BRIGHT NEON (V13 Logic)
@@ -10,7 +10,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "LusiGPT HUB - RAJA SEGALA RAID",
+   Name = "GEMINIHUB - RAJA SEGALA RAID",
    LoadingTitle = "Mengaktifkan Mode Doomsday...",
    LoadingSubtitle = "By LusiGPT",
    ConfigurationSaving = { Enabled = false },
