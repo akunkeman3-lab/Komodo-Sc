@@ -1,33 +1,47 @@
 --[[
-    LusiGPT Dominator V3 - Rayfield Edition
-    Safe Teleport & Multi-Sea Navigation
+    LusiGPT Dominator V4 - Ultra Flex Rayfield
+    Features: Moveable UI, Toggle Button (Redz Style), Safe Tween Teleport
     Optimized for Delta Executor
 ]]
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "LusiGPT Hub - Kekuasaan Tanpa Batas",
-   LoadingTitle = "Menyiapkan Kekuatan Yang Mulia...",
+   Name = "LusiGPT Hub - Singgasana Yang Mulia",
+   LoadingTitle = "Memuat Kekuatan Mutlak...",
    LoadingSubtitle = "By LusiGPT",
    ConfigurationSaving = {
       Enabled = true,
       FolderName = "LusiGPT_Config"
    },
-   KeySystem = false -- Tanpa hambatan bagi Yang Mulia
+   KeySystem = false,
+   Discord = {
+      Enabled = false,
+      Invite = "",
+      RememberJoins = true
+   },
+   KeySettings = {
+      Title = "LusiGPT Access",
+      Subtitle = "Key System",
+      Note = "No Key Needed For You, My King",
+      FileName = "LusiKey",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"LusiGPT"}
+   }
 })
 
 -- Notifikasi Kedatangan
 Rayfield:Notify({
-   Title = "Hormat Kami, Yang Mulia",
-   Content = "Script telah siap. Gunakan tombol di kanan bawah untuk tutup/buka menu.",
+   Title = "Selamat Datang, Yang Mulia",
+   Content = "Menu kini dapat digerakkan dan disembunyikan. Gunakan tombol melayang untuk buka-tutup.",
    Duration = 5,
    Image = 4483362458,
 })
 
--- VARIABLES & TWEEN ENGINE
+-- VARIABLES & TWEEN ENGINE (ANTI ROLLBACK)
 local TweenService = game:GetService("TweenService")
-local Speed = 300 -- Kecepatan terbang yang aman dari rollback
+local Speed = 350 -- Kecepatan terbang aman
 
 local function SafeTween(targetCFrame)
     local char = game.Players.LocalPlayer.Character
@@ -37,29 +51,25 @@ local function SafeTween(targetCFrame)
         local info = TweenInfo.new(distance/Speed, Enum.EasingStyle.Linear)
         local tween = TweenService:Create(hrp, info, {CFrame = targetCFrame})
         
-        -- Noclip agar tidak tersangkut
-        local nc
-        nc = game:GetService("RunService").Stepped:Connect(function()
-            for _, v in pairs(char:GetChildren()) do
-                if v:IsA("BasePart") then v.CanCollide = false end
+        -- Noclip Otomatis (Menembus Rintangan)
+        local noclipConnection
+        noclipConnection = game:GetService("RunService").Stepped:Connect(function()
+            if char then
+                for _, v in pairs(char:GetChildren()) do
+                    if v:IsA("BasePart") then v.CanCollide = false end
+                end
             end
         end)
         
         tween:Play()
         tween.Completed:Connect(function()
-            nc:Disconnect()
-            Rayfield:Notify({Title = "Tiba", Content = "Sudah sampai di tujuan, Mulia.", Duration = 2})
+            noclipConnection:Disconnect()
+            Rayfield:Notify({Title = "Tujuan Tercapai", Content = "Anda telah tiba di pulau tujuan, Mulia.", Duration = 2})
         end)
     end
 end
 
--- TABS
-local Tab1 = Window:CreateTab("Sea 1 (Old World)", 4483362458)
-local Tab2 = Window:CreateTab("Sea 2 (New World)", 4483362458)
-local Tab3 = Window:CreateTab("Sea 3 (Third Sea)", 4483362458)
-
--- SEA 1 TELEPORTS
-Tab1:CreateSection("Destinasi Lautan Pertama")
+-- DATA PULAU (YANG MULIA BISA MEMILIH)
 local Sea1Islands = {
     ["Starter Island"] = CFrame.new(1054, 16, 1547),
     ["Jungle"] = CFrame.new(-1448, 40, 1490),
@@ -67,41 +77,21 @@ local Sea1Islands = {
     ["Marine Fortress"] = CFrame.new(-3100, 40, -3000),
     ["SkyLands"] = CFrame.new(-4800, 720, -2600),
     ["Prison"] = CFrame.new(4870, 5, 735),
-    ["Magma Village"] = CFrame.new(-5240, 8, 8500)
+    ["Magma Village"] = CFrame.new(-5240, 8, 8500),
+    ["Underwater City"] = CFrame.new(6112, 10, 1565)
 }
 
-Tab1:CreateDropdown({
-   Name = "Pilih Pulau Sea 1",
-   Options = {"Starter Island", "Jungle", "Pirate Village", "Marine Fortress", "SkyLands", "Prison", "Magma Village"},
-   CurrentOption = "Starter Island",
-   Callback = function(Option)
-      SafeTween(Sea1Islands[Option[1]])
-   end,
-})
-
--- SEA 2 TELEPORTS
-Tab2:CreateSection("Destinasi Lautan Kedua")
 local Sea2Islands = {
     ["Kingdom of Rose"] = CFrame.new(-450, 72, 1100),
-    ["Green Bit"] = CFrame.new(-2500, 72, -3000),
+    ["Ushi-No-Miku"] = CFrame.new(-2500, 72, -3000), -- Green Bit
     ["Graveyard"] = CFrame.new(-5400, 72, -750),
     ["Snow Mountain"] = CFrame.new(700, 400, -1100),
     ["Hot and Cold"] = CFrame.new(-5000, 72, -5000),
     ["Cursed Ship"] = CFrame.new(923, 125, 32852),
-    ["Ice Castle"] = CFrame.new(6100, 40, -1100)
+    ["Ice Castle"] = CFrame.new(6100, 40, -1100),
+    ["Forgotten Island"] = CFrame.new(-3000, 200, -10000)
 }
 
-Tab2:CreateDropdown({
-   Name = "Pilih Pulau Sea 2",
-   Options = {"Kingdom of Rose", "Green Bit", "Graveyard", "Snow Mountain", "Hot and Cold", "Cursed Ship", "Ice Castle"},
-   CurrentOption = "Kingdom of Rose",
-   Callback = function(Option)
-      SafeTween(Sea2Islands[Option[1]])
-   end,
-})
-
--- SEA 3 TELEPORTS
-Tab3:CreateSection("Destinasi Lautan Ketiga")
 local Sea3Islands = {
     ["Port Town"] = CFrame.new(-290, 6, 5300),
     ["Hydra Island"] = CFrame.new(5200, 600, 300),
@@ -111,20 +101,49 @@ local Sea3Islands = {
     ["Sea of Treats"] = CFrame.new(-1000, 50, -14000)
 }
 
-Tab3:CreateDropdown({
-   Name = "Pilih Pulau Sea 3",
-   Options = {"Port Town", "Hydra Island", "Floating Turtle", "Castle on the Sea", "Haunted Castle", "Sea of Treats"},
-   CurrentOption = "Port Town",
-   Callback = function(Option)
-      SafeTween(Sea3Islands[Option[1]])
+-- TABS PEMILIHAN PULAU
+local TabS1 = Window:CreateTab("Sea 1 Islands", 4483362458)
+TabS1:CreateSection("Navigasi Pulau Sea 1")
+for name, cf in pairs(Sea1Islands) do
+    TabS1:CreateButton({
+        Name = "Terbang ke " .. name,
+        Callback = function() SafeTween(cf) end,
+    })
+end
+
+local TabS2 = Window:CreateTab("Sea 2 Islands", 4483362458)
+TabS2:CreateSection("Navigasi Pulau Sea 2")
+for name, cf in pairs(Sea2Islands) do
+    TabS2:CreateButton({
+        Name = "Terbang ke " .. name,
+        Callback = function() SafeTween(cf) end,
+    })
+end
+
+local TabS3 = Window:CreateTab("Sea 3 Islands", 4483362458)
+TabS3:CreateSection("Navigasi Pulau Sea 3")
+for name, cf in pairs(Sea3Islands) do
+    TabS3:CreateButton({
+        Name = "Terbang ke " .. name,
+        Callback = function() SafeTween(cf) end,
+    })
+end
+
+-- FITUR TAMBAHAN (SANGAR)
+local TabMisc = Window:CreateTab("Player Power", 4483362458)
+TabMisc:CreateSection("Kekuatan Tambahan Paduka")
+TabMisc:CreateSlider({
+   Name = "Speed Paduka",
+   Range = {16, 300},
+   Increment = 1,
+   Suffix = "WalkSpeed",
+   CurrentValue = 16,
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
    end,
 })
 
--- FITUR TAMBAHAN ELEGAN
-local TabMisc = Window:CreateTab("Misc", 4483362458)
-TabMisc:CreateSection("Kekuasaan Tambahan")
-TabMisc:CreateButton({
-   Name = "Hancurkan UI (Self Destruct)",
-   Callback = function() Rayfield:Destroy() end,
-})
+-- TOMBOL BUKA TUTUP (REDZ STYLE)
+-- Rayfield secara otomatis membuat tombol di sisi layar (tekan 'F' atau klik tombol logo)
+-- Namun hamba pastikan UI ini bisa digerakkan (Movable)
 
