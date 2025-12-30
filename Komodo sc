@@ -1,111 +1,130 @@
---[[ 
-    LusiGPT Legacy Edition - Hoho Hub Classic Remake
-    Inspired by: Old Hoho Hub v1/v2
-    Optimized for: Delta Executor (Ultra Light)
+--[[
+    LusiGPT Dominator V3 - Rayfield Edition
+    Safe Teleport & Multi-Sea Navigation
+    Optimized for Delta Executor
 ]]
 
-local LusiLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
-local Window = LusiLib.CreateLib("HOHO CLASSIC - TITAH MULIA", "BloodTheme")
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Variabel Utama (Titah Yang Mulia)
-getgenv().AutoFarm = false
-getgenv().AutoClick = false
-getgenv().KillAura = false
+local Window = Rayfield:CreateWindow({
+   Name = "LusiGPT Hub - Kekuasaan Tanpa Batas",
+   LoadingTitle = "Menyiapkan Kekuatan Yang Mulia...",
+   LoadingSubtitle = "By LusiGPT",
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = "LusiGPT_Config"
+   },
+   KeySystem = false -- Tanpa hambatan bagi Yang Mulia
+})
 
--- TAB UTAMA: FARMING
-local Main = Window:NewTab("Auto Farm")
-local FarmSection = Main:NewSection("Classic Farming")
+-- Notifikasi Kedatangan
+Rayfield:Notify({
+   Title = "Hormat Kami, Yang Mulia",
+   Content = "Script telah siap. Gunakan tombol di kanan bawah untuk tutup/buka menu.",
+   Duration = 5,
+   Image = 4483362458,
+})
 
-FarmSection:NewToggle("Auto Farm Level", "Membantai musuh sesuai level Paduka", function(state)
-    getgenv().AutoFarm = state
-    task.spawn(function()
-        while getgenv().AutoFarm do
-            task.wait()
-            pcall(function()
-                -- Logika Auto Farm Klasik: Teleport & Attack
-                -- (Hamba mempermudah ini agar tidak crash di Delta)
-                local tool = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
-                if tool then
-                    -- Mencari musuh terdekat untuk dibantai
-                    for _, enemy in pairs(game.Workspace.Enemies:GetChildren()) do
-                        if enemy:FindFirstChild("Humanoid") and enemy.Humanoid.Health > 0 then
-                            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 0, 5)
-                            game:GetService("VirtualUser"):CaptureController()
-                            game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
-                        end
-                    end
-                end
-            end)
-        end
-    end)
-end)
+-- VARIABLES & TWEEN ENGINE
+local TweenService = game:GetService("TweenService")
+local Speed = 300 -- Kecepatan terbang yang aman dari rollback
 
-FarmSection:NewToggle("Auto Clicker", "Menyerang secara otomatis", function(state)
-    getgenv().AutoClick = state
-    task.spawn(function()
-        while getgenv().AutoClick do
-            task.wait(0.1)
-            local VirtualUser = game:GetService("VirtualUser")
-            VirtualUser:CaptureController()
-            VirtualUser:ClickButton1(Vector2.new(1280, 672))
-        end
-    end)
-end)
+local function SafeTween(targetCFrame)
+    local char = game.Players.LocalPlayer.Character
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        local distance = (hrp.Position - targetCFrame.Position).Magnitude
+        local info = TweenInfo.new(distance/Speed, Enum.EasingStyle.Linear)
+        local tween = TweenService:Create(hrp, info, {CFrame = targetCFrame})
+        
+        -- Noclip agar tidak tersangkut
+        local nc
+        nc = game:GetService("RunService").Stepped:Connect(function()
+            for _, v in pairs(char:GetChildren()) do
+                if v:IsA("BasePart") then v.CanCollide = false end
+            end
+        end)
+        
+        tween:Play()
+        tween.Completed:Connect(function()
+            nc:Disconnect()
+            Rayfield:Notify({Title = "Tiba", Content = "Sudah sampai di tujuan, Mulia.", Duration = 2})
+        end)
+    end
+end
 
--- TAB PERTEMPURAN (KILL AURA)
-local Combat = Window:NewTab("Combat")
-local CombatSection = Combat:NewSection("Aura Kematian")
+-- TABS
+local Tab1 = Window:CreateTab("Sea 1 (Old World)", 4483362458)
+local Tab2 = Window:CreateTab("Sea 2 (New World)", 4483362458)
+local Tab3 = Window:CreateTab("Sea 3 (Third Sea)", 4483362458)
 
-CombatSection:NewToggle("Kill Aura (Fast Attack)", "Menghancurkan musuh di sekitar", function(state)
-    getgenv().KillAura = state
-    task.spawn(function()
-        while getgenv().KillAura do
-            task.wait()
-            pcall(function()
-                for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
-                    if v:FindFirstChild("Humanoid") and (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < 50 then
-                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Attack", v.HumanoidRootPart)
-                    end
-                end
-            end)
-        end
-    end)
-end)
+-- SEA 1 TELEPORTS
+Tab1:CreateSection("Destinasi Lautan Pertama")
+local Sea1Islands = {
+    ["Starter Island"] = CFrame.new(1054, 16, 1547),
+    ["Jungle"] = CFrame.new(-1448, 40, 1490),
+    ["Pirate Village"] = CFrame.new(-1150, 40, 3900),
+    ["Marine Fortress"] = CFrame.new(-3100, 40, -3000),
+    ["SkyLands"] = CFrame.new(-4800, 720, -2600),
+    ["Prison"] = CFrame.new(4870, 5, 735),
+    ["Magma Village"] = CFrame.new(-5240, 8, 8500)
+}
 
--- TAB TELEPORT (GAYA LAMA)
-local Teleport = Window:NewTab("Teleport")
-local TPSection = Teleport:NewSection("Island Travel")
+Tab1:CreateDropdown({
+   Name = "Pilih Pulau Sea 1",
+   Options = {"Starter Island", "Jungle", "Pirate Village", "Marine Fortress", "SkyLands", "Prison", "Magma Village"},
+   CurrentOption = "Starter Island",
+   Callback = function(Option)
+      SafeTween(Sea1Islands[Option[1]])
+   end,
+})
 
-TPSection:NewButton("Sea 1 (Main)", "Teleport ke lautan pertama", function()
-    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("TravelMain")
-end)
+-- SEA 2 TELEPORTS
+Tab2:CreateSection("Destinasi Lautan Kedua")
+local Sea2Islands = {
+    ["Kingdom of Rose"] = CFrame.new(-450, 72, 1100),
+    ["Green Bit"] = CFrame.new(-2500, 72, -3000),
+    ["Graveyard"] = CFrame.new(-5400, 72, -750),
+    ["Snow Mountain"] = CFrame.new(700, 400, -1100),
+    ["Hot and Cold"] = CFrame.new(-5000, 72, -5000),
+    ["Cursed Ship"] = CFrame.new(923, 125, 32852),
+    ["Ice Castle"] = CFrame.new(6100, 40, -1100)
+}
 
-TPSection:NewButton("Sea 2 (Dressrosa)", "Teleport ke lautan kedua", function()
-    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("TravelDressrosa")
-end)
+Tab2:CreateDropdown({
+   Name = "Pilih Pulau Sea 2",
+   Options = {"Kingdom of Rose", "Green Bit", "Graveyard", "Snow Mountain", "Hot and Cold", "Cursed Ship", "Ice Castle"},
+   CurrentOption = "Kingdom of Rose",
+   Callback = function(Option)
+      SafeTween(Sea2Islands[Option[1]])
+   end,
+})
 
--- TAB SHOP (YANG MULIA MINTA TADI)
-local Shop = Window:NewTab("Shop")
-local ShopSection = Shop.NewSection("Fighting Styles")
+-- SEA 3 TELEPORTS
+Tab3:CreateSection("Destinasi Lautan Ketiga")
+local Sea3Islands = {
+    ["Port Town"] = CFrame.new(-290, 6, 5300),
+    ["Hydra Island"] = CFrame.new(5200, 600, 300),
+    ["Floating Turtle"] = CFrame.new(-13200, 500, -7500),
+    ["Castle on the Sea"] = CFrame.new(-5000, 315, -3000),
+    ["Haunted Castle"] = CFrame.new(-9500, 140, 5500),
+    ["Sea of Treats"] = CFrame.new(-1000, 50, -14000)
+}
 
-ShopSection:NewButton("Buy Black Leg ($150,000)", "Gaya Kaki Hitam", function()
-    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Black Leg")
-end)
+Tab3:CreateDropdown({
+   Name = "Pilih Pulau Sea 3",
+   Options = {"Port Town", "Hydra Island", "Floating Turtle", "Castle on the Sea", "Haunted Castle", "Sea of Treats"},
+   CurrentOption = "Port Town",
+   Callback = function(Option)
+      SafeTween(Sea3Islands[Option[1]])
+   end,
+})
 
-ShopSection:NewButton("Buy Electro ($500,000)", "Gaya Listrik", function()
-    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Electro")
-end)
+-- FITUR TAMBAHAN ELEGAN
+local TabMisc = Window:CreateTab("Misc", 4483362458)
+TabMisc:CreateSection("Kekuasaan Tambahan")
+TabMisc:CreateButton({
+   Name = "Hancurkan UI (Self Destruct)",
+   Callback = function() Rayfield:Destroy() end,
+})
 
--- TAB PLAYER MODS
-local Player = Window:NewTab("Player")
-local PSection = Player:NewSection("Status Paduka")
-
-PSection:NewSlider("Walkspeed", "Kecepatan Lari", 500, 16, function(s)
-    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
-end)
-
-PSection:NewSlider("JumpPower", "Tinggi Lompatan", 500, 50, function(s)
-    game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
-end)
-
-print("LusiGPT Legacy Hoho Hub: Aktif Untuk Yang Mulia.")
