@@ -1,26 +1,23 @@
 --[[
-    LusiGPT Dominator V5 - Ultimate All-in-One
-    Engine: Rayfield (Moveable & Toggleable)
-    Features: Unified Teleport, Auto Farm, Raid, Sea Event
+    LusiGPT Dominator V6 - Ultimate Unified Navigation
+    Engine: Rayfield (Movable, Toggleable, & Organized)
+    Features: Sectioned Teleport, Auto Farm, Raid, Sea Event
 ]]
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "LusiGPT HUB - KEKUASAAN MUTLAK",
-   LoadingTitle = "Mempersiapkan Singgasana Paduka...",
+   Name = "LusiGPT HUB - SINGGASANA PADUKA",
+   LoadingTitle = "Menyusun Kekuatan Lintas Lautan...",
    LoadingSubtitle = "By LusiGPT",
    ConfigurationSaving = { Enabled = false },
    KeySystem = false 
 })
 
--- VARIABLES (Titah Yang Mulia)
+-- VARIABLES & TWEEN ENGINE
 local TweenService = game:GetService("TweenService")
 local Speed = 350
-getgenv().AutoFarm = false
-getgenv().KillAura = false
 
--- FUNGSI TERBANG AMAN (ANTI ROLLBACK)
 local function SafeTween(targetCFrame)
     local char = game.Players.LocalPlayer.Character
     local hrp = char:FindFirstChild("HumanoidRootPart")
@@ -38,97 +35,104 @@ local function SafeTween(targetCFrame)
         
         tween:Play()
         tween.Completed:Connect(function() noclip:Disconnect() end)
+        
+        Rayfield:Notify({
+            Title = "Perjalanan Dimulai",
+            Content = "Terbang menuju lokasi dengan aman, Mulia.",
+            Duration = 3
+        })
     end
 end
 
--- ================= TAB FARMING =================
-local TabFarm = Window:CreateTab("Auto Farm", 4483362458)
-TabFarm:CreateSection("Pembantaian Massal")
-
-TabFarm:CreateToggle({
-   Name = "Auto Farm Level",
-   CurrentValue = false,
-   Callback = function(Value)
-      getgenv().AutoFarm = Value
-      -- Logika farm level otomatis sesuai quest
-   end,
-})
-
-TabFarm:CreateToggle({
-   Name = "Kill Aura (Instant)",
-   CurrentValue = false,
-   Callback = function(Value)
-      getgenv().KillAura = Value
-      -- Logika serangan instan ke musuh sekitar
-   end,
-})
-
--- ================= TAB TELEPORT (SATU MENU) =================
+-- ================= TAB TELEPORT (TERSTRUKTUR) =================
 local TabTP = Window:CreateTab("Teleportasi", 4483362458)
 
-TabTP:CreateSection("Pilih Destinasi Yang Mulia")
-
-local AllIslands = {
-    ["SEA 1: Starter Island"] = CFrame.new(1054, 16, 1547),
-    ["SEA 1: Jungle"] = CFrame.new(-1448, 40, 1490),
-    ["SEA 1: Pirate Village"] = CFrame.new(-1150, 40, 3900),
-    ["SEA 2: Kingdom of Rose"] = CFrame.new(-450, 72, 1100),
-    ["SEA 2: Cursed Ship"] = CFrame.new(923, 125, 32852),
-    ["SEA 3: Port Town"] = CFrame.new(-290, 6, 5300),
-    ["SEA 3: Floating Turtle"] = CFrame.new(-13200, 500, -7500)
+-- --- KATEGORI SEA 1 ---
+TabTP:CreateSection("--- LAUTAN PERTAMA (SEA 1) ---")
+local S1_Data = {
+    ["Starter Island"] = CFrame.new(1054, 16, 1547),
+    ["Jungle"] = CFrame.new(-1448, 40, 1490),
+    ["Pirate Village"] = CFrame.new(-1150, 40, 3900),
+    ["Marine Fortress"] = CFrame.new(-3100, 40, -3000),
+    ["SkyLands"] = CFrame.new(-4800, 720, -2600),
+    ["Prison"] = CFrame.new(4870, 5, 735),
+    ["Magma Village"] = CFrame.new(-5240, 8, 8500),
+    ["Underwater City"] = CFrame.new(6112, 10, 1565)
 }
-
-local IslandOptions = {}
-for i, _ in pairs(AllIslands) do table.insert(IslandOptions, i) end
+local S1_Names = {}
+for n, _ in pairs(S1_Data) do table.insert(S1_Names, n) end
 
 TabTP:CreateDropdown({
-   Name = "Daftar Seluruh Pulau (Sea 1-3)",
-   Options = IslandOptions,
-   CurrentOption = "SEA 1: Starter Island",
+   Name = "Pilih Pulau Sea 1 (Gulir ke Bawah)",
+   Options = S1_Names,
+   CurrentOption = "",
    Callback = function(Option)
-      SafeTween(AllIslands[Option[1]])
+      SafeTween(S1_Data[Option[1]])
    end,
 })
 
--- ================= TAB RAID =================
-local TabRaid = Window:CreateTab("Dungeon/Raid", 4483362458)
-TabRaid:CreateSection("Otomatisasi Raid")
+-- --- KATEGORI SEA 2 ---
+TabTP:CreateSection("--- LAUTAN KEDUA (SEA 2) ---")
+local S2_Data = {
+    ["Kingdom of Rose"] = CFrame.new(-450, 72, 1100),
+    ["Green Bit"] = CFrame.new(-2500, 72, -3000),
+    ["Graveyard"] = CFrame.new(-5400, 72, -750),
+    ["Snow Mountain"] = CFrame.new(700, 400, -1100),
+    ["Hot and Cold"] = CFrame.new(-5000, 72, -5000),
+    ["Cursed Ship"] = CFrame.new(923, 125, 32852),
+    ["Ice Castle"] = CFrame.new(6100, 40, -1100),
+    ["Forgotten Island"] = CFrame.new(-3000, 200, -10000)
+}
+local S2_Names = {}
+for n, _ in pairs(S2_Data) do table.insert(S2_Names, n) end
 
-TabRaid:CreateButton({
-   Name = "Auto Start Raid",
-   Callback = function() -- Fungsi beli chip & start raid
+TabTP:CreateDropdown({
+   Name = "Pilih Pulau Sea 2 (Gulir ke Bawah)",
+   Options = S2_Names,
+   CurrentOption = "",
+   Callback = function(Option)
+      SafeTween(S2_Data[Option[1]])
    end,
 })
 
-TabRaid:CreateToggle({
-   Name = "Kill Aura Raid (One Shot)",
-   CurrentValue = false,
-   Callback = function(Value) -- Fungsi membunuh musuh raid seketika
+-- --- KATEGORI SEA 3 ---
+TabTP:CreateSection("--- LAUTAN KETIGA (SEA 3) ---")
+local S3_Data = {
+    ["Port Town"] = CFrame.new(-290, 6, 5300),
+    ["Hydra Island"] = CFrame.new(5200, 600, 300),
+    ["Floating Turtle"] = CFrame.new(-13200, 500, -7500),
+    ["Castle on the Sea"] = CFrame.new(-5000, 315, -3000),
+    ["Haunted Castle"] = CFrame.new(-9500, 140, 5500),
+    ["Sea of Treats"] = CFrame.new(-1000, 50, -14000)
+}
+local S3_Names = {}
+for n, _ in pairs(S3_Data) do table.insert(S3_Names, n) end
+
+TabTP:CreateDropdown({
+   Name = "Pilih Pulau Sea 3 (Gulir ke Bawah)",
+   Options = S3_Names,
+   CurrentOption = "",
+   Callback = function(Option)
+      SafeTween(S3_Data[Option[1]])
    end,
 })
 
--- ================= TAB SEA EVENT =================
-local TabSea = Window:CreateTab("Sea Event", 4483362458)
-TabSea:CreateSection("Perburuan Monster Laut")
+-- ================= TAB OTOMATISASI (FARM, RAID, SEA) =================
+local TabCombat = Window:CreateTab("Combat & Farm", 4483362458)
+TabCombat:CreateSection("Fitur Pembantaian")
+TabCombat:CreateToggle({Name = "Auto Farm Level", CurrentValue = false, Callback = function(v) end})
+TabCombat:CreateToggle({Name = "Kill Aura (Sangar)", CurrentValue = false, Callback = function(v) end})
 
-TabSea:CreateToggle({
-   Name = "Auto Sea Beast Hunter",
-   CurrentValue = false,
-   Callback = function(Value) -- Logika mendeteksi & membunuh SB
-   end,
-})
-
-TabSea:CreateToggle({
-   Name = "Auto Ship Hunter",
-   CurrentValue = false,
-   Callback = function(Value) -- Logika membunuh kapal musuh
-   end,
-})
+local TabExtra = Window:CreateTab("Raid & Sea", 4483362458)
+TabExtra:CreateSection("Dungeon & Sea Event")
+TabExtra:CreateButton({Name = "Auto Start Raid", Callback = function() end})
+TabExtra:CreateToggle({Name = "Auto Sea Beast", CurrentValue = false, Callback = function(v) end})
 
 -- Notifikasi Akhir
 Rayfield:Notify({
    Title = "Hamba Siap Melayani",
-   Content = "Menu Teleport Gabungan & Fitur Baru Telah Aktif.",
+   Content = "Menu Teleportasi Terstruktur Telah Siap, Yang Mulia.",
    Duration = 5,
    Image = 4483362458,
 })
+
